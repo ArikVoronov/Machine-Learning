@@ -1,6 +1,15 @@
 # Machine-Learning
-Different instances of ML implementations
+Different instances of ML implementations including:
 
-This is just testing
+Basic ML algorithms :
 
-Pushed update
+* Simple Linear Regression
+* K Nearest Neightbours
+* K-Means
+* Support Vector Machine (SVM)
+
+
+Convolutional Neural Netowrk (ConvNet):
+
+The network is a able to connect an indefinite number of convolutional layers (with maxpool optional) and fully connected layers.
+A simple test case of digit recongnition is run (with 2000 samples, for simplicity), getting about 12% error.
