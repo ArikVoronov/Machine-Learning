@@ -3,16 +3,8 @@ from matplotlib import style
 style.use('ggplot')
 import numpy as np
 
-##X = np.array([[1,2],
-##              [1.5,1.8],
-##              [5,8],
-##              [8,8],
-##              [1,0.6],
-##              [9,11],
-##              [8,2],
-##              [10,2],
-##              [9,3]])
 
+# Create dataset by combining 3 normally distributed feature sets
 mean1 = [11, 10]
 mean2 = [15,15]
 mean3 = [19,11]
@@ -22,12 +14,10 @@ X2 = np.random.multivariate_normal(mean2, cov, 10)
 X3 = np.random.multivariate_normal(mean3, cov, 10)
 X = np.vstack((X1,X2,X3))
 
-colors = 10*['r','g','b','c','orange']
+
 
 class Mean_Shift:
-    def __init__(self, radius = None, radius_norm_step = 100,tol = 1e-2):
-##        self.radius = radius
-##        self.radius_norm_step = radius_norm_step
+    def __init__(self, tol = 1e-2):
         self.tol = tol
         
     def fit(self,data):
@@ -38,19 +28,17 @@ class Mean_Shift:
             norm_v.append(np.linalg.norm( d-self.all_data_centroid))
         self.norm_v = norm_v
         all_data_norm = np.std(norm_v)
-        print('norms',max(norm_v),np.average(norm_v),np.std(norm_v))
+        print('Stats for distance of data points from common centroid:')
+        print('max:',max(norm_v),'\nmean:',np.average(norm_v),'\nSTD:',np.std(norm_v),'\n')
         self.all_data_norm = all_data_norm
 
-        # Radius 
-##        if self.radius == None:
-##            self.radius = all_data_norm / self.radius_norm_step
-##            print(self.radius)
 
         # Start with all data points as centroids
         centroids = {}
         for i in range(len(data)):
             centroids[i] = data[i]
 
+        # Calculate new iteration of centroids
         while True:
             new_centroids = []
             for i in centroids:
@@ -81,44 +69,35 @@ class Mean_Shift:
                     criterion = np.linalg.norm(np.array(i)-np.array(ii))
                     if criterion <= self.all_data_norm:
                         to_pop.append(ii)
-                        break
-##                    if i == ii:
-##                        pass
-##                    elif criterion <= self.all_data_norm:
-##                        to_pop.append(ii)
-##                        break
-            
-            for i in to_pop:
-                try:
-                    uniques.remove(i)
-                except:
-                    pass
+                        
+            to_pop_uniques =  sorted(list(set(to_pop)))
+            for i in to_pop_uniques:
+                uniques.remove(i)
 
-
-            # Check for convergence
+             
             prev_centroids = dict(centroids)
             centroids = {}
-            
             for i in range(len(uniques)):
                 centroids[i] = np.array(uniques[i])
-            optimized = True
+            # Check for convergence
+            # This is a trick, in a state close to convergence,
+            # the number of centroids and their relative position won't change much
+            # so comparing centroids with the same index between iterations makes sense
 
+            crit = 0
             for i in centroids:
-                crit = np.linalg.norm(centroids[i]-prev_centroids[i])
-                print('crit',crit)
-                if crit > self.tol*self.all_data_norm:
-                    optimized = False
-                if not optimized:
-                    break
-            
-            if optimized:
+                crit = max(crit,np.linalg.norm(centroids[i]-prev_centroids[i]))
+            # Check how ratio between current criteria and convergence
+            crit_ratio = crit/(self.tol*self.all_data_norm)
+            print('Centroids:',len(centroids),' |  Criterion:',crit_ratio)
+            if crit < self.tol*self.all_data_norm:
                 break
+
 
         self.centroids = centroids
         
-
+        # Classify all data points by minimal distance from converged centroids 
         self.classifications = {}
-
         for i in range(len(self.centroids)):
             self.classifications[i] = []
 
@@ -138,10 +117,9 @@ clf.fit(X)
 centroids = clf.centroids
 
 
-#plt.scatter(X[:,0],X[:,1], s=150)
-##print(centroids)
-
 print('centroids',len(centroids),centroids)
+
+colors = 10*['r','g','b','c','orange']
 for classification in clf.classifications:
     color = colors[classification]
     for featureset in clf.classifications[classification]:
