@@ -17,4 +17,4 @@ A simple test case of digit recongnition is run (with 2000 samples, for simplici
 
 # Reinforcement Learning
 
-* Pong - RL algorithm learning to play the classic game Pong (my version, somewhat similar to the Atari version). The algorithm uses my ConvNet code, with 2 fully connected layers.
+* Pong - RL algorithm learning to play the classic game Pong (my version, somewhat similar to the Atari version). The algorithm uses my ConvNet code. However, in this example, the net is built from 2 fully connected layers only, using the game variables (such as ball speed and position) as input directly.
