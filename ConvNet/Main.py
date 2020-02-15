@@ -28,7 +28,7 @@ def one_hot_output(y):
 #%% Main
 
 # Import data as pandas object
-df = pd.read_csv('digits2000.csv')
+df = pd.read_csv('digits_full.csv')
 
 ## 
 #%% Organize input for ConvNet
@@ -36,8 +36,8 @@ df = pd.read_csv('digits2000.csv')
 np.random.seed(1)
 
 # Input x[inputs,samples]
-samples = 1.8e3
-x_train =  np.array(df.drop('label',1).loc[:(samples-1)].values).astype(int).T
+samples = 40e3
+x_train = np.array(df.drop('label',1).loc[:(samples-1)].values).astype(int).T
 x_train = x_train.reshape(28,28,1,-1)
 
 # Output - one hot - y[ouputs,samples]
@@ -69,7 +69,7 @@ beta2 = 0.98 # Step normalization parameter
 gamma = 0.001 # Decay mulptiplier at the end of training (epochs*batch_size)
 epsilon = 1e-8 # Addition to denominator to prevent div by 0
 lam = 1e-4 # Regularization parameter
-b_size = 256 # Batch size
+b_size = 512 # Batch size
 clf = ConvNet.network(epochs,tolerance,actuators,layer_parameters,layer_types,alpha,beta1,beta2,epsilon,gamma,lam)
 
 # Train Neural Network
@@ -88,7 +88,7 @@ with open(PIK, "wb") as f:
 ##
 #%% Predict
 
-test_samples = 200
+test_samples = 3000
 print('Predicting using {} test samples'.format(test_samples))
 x_test =  np.array(df.drop('label',1).loc[:].values).astype(int).T
 x_test = x_test[:,-test_samples:]
